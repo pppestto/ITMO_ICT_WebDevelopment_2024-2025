@@ -1,37 +1,4 @@
-# Отчеты по лабораторным работам
-
-## Выберите лабораторную работу
-
-<div class="lab-selection">
-  <div class="lab-card" onclick="window.location.href='lr1.md'">
-    <div class="lab-icon">🔌</div>
-    <h3>Лабораторная работа 1</h3>
-    <p>Работа с сетевыми сокетами в Python</p>
-    <div class="lab-status">Завершена</div>
-  </div>
-
-  <div class="lab-card" onclick="window.location.href='lr2.md'">
-    <div class="lab-icon">🚀</div>
-    <h3>Лабораторная работа 2</h3>
-    <p>Django приложение для автогонок</p>
-    <div class="lab-status">Завершена</div>
-  </div>
-
-  <div class="lab-card" onclick="window.location.href='lr3.md'">
-    <div class="lab-icon">🎯</div>
-    <h3>Лабораторная работа 3</h3>
-    <p>Хакатон API</p>
-    <div class="lab-status">В разработке</div>
-  </div>
-
-  <div class="lab-card" onclick="window.location.href='lr4.md'">
-    <div class="lab-icon">🔧</div>
-    <h3>Лабораторная работа 4</h3>
-    <p>Будущая лабораторная работа</p>
-    <div class="lab-status">Ожидает</div>
-  </div>
-
-</div>
+# Лабораторная работа 1: Работа с сокетами в Python
 
 ## О проекте
 
@@ -40,200 +7,161 @@
 - **Дисциплина:** Основы Web-программирования
 - **Студент:** Василев Артур
 - **Группа:** К3340
-- **Год:** 2024-2025
+- **Год:** 2025-2026
 
-<style>
-.lab-selection {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin: 40px 0;
-}
 
-.lab-card {
-  border: 2px solid #e0e0e0;
-  border-radius: 15px;
-  padding: 30px 20px;
-  text-align: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
 
-.lab-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
-}
+## Задание 1 — UDP эхо
 
-.lab-card:hover::before {
-  left: 100%;
-}
+### Цель
+Освоить работу с UDP-сокетами: отправка/приём датаграмм без установления соединения.
 
-.lab-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-  border-color: #1976d2;
-}
+### Протокол и API
+- Адресное семейство: AF_INET (IPv4)
+- Тип сокета: SOCK_DGRAM (UDP)
+- Ключевые вызовы:
+  - Сервер: socket(), bind(), recvfrom(), sendto()
+  - Клиент: socket(), sendto(), recvfrom()
 
-.lab-icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
-}
+### Файлы
+- Lr1/task1/server.py
+- Lr1/task1/client.py
 
-.lab-card h3 {
-  color: #1976d2;
-  margin-bottom: 10px;
-  font-size: 1.4rem;
-}
+### Запуск
+Терминал 1:
+```
+cd ...\Lr1\task1
+python server.py
+```
+Терминал 2:
+```
+cd ...\Lr1\task1
+python client.py
+```
 
-.lab-card p {
-  color: #666;
-  margin: 15px 0;
-  line-height: 1.5;
-}
+### Ожидаемый результат
+Сервер выводит полученное сообщение и отвечает "Hello, client"; клиент печатает ответ. Для выхода введите 'exit'.
 
-.lab-status {
-  background: #4caf50;
-  color: white;
-  padding: 5px 15px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  display: inline-block;
-  margin-top: 10px;
-}
 
-@media (max-width: 768px) {
-  .lab-selection {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+## Задание 2 — TCP калькулятор площади параллелограмма
 
-.lab-card p {
-  margin: 10px 0;
-  color: #666;
-}
+### Цель
+Реализовать TCP клиент-сервер для вычисления площади параллелограмма по формуле S = основание × высота.
 
-.btn {
-  display: inline-block;
-  background: #1976d2;
-  color: white;
-  padding: 10px 20px;
-  text-decoration: none;
-  border-radius: 5px;
-  margin-top: 10px;
-  transition: background 0.2s;
-}
+### Протокол и API
+- Адресное семейство: AF_INET (IPv4)
+- Тип сокета: SOCK_STREAM (TCP)
+- Ключевые вызовы:
+  - Сервер: socket(), bind(), listen(), accept(), recv(), send()
+  - Клиент: socket(), connect(), send(), recv()
 
-.btn:hover {
-  background: #1565c0;
-}
-</style>
+### Файлы
+- Lr1/task2/server.py
+- Lr1/task2/client.py
 
-## Практическое задание
+### Запуск
+Терминал 1:
+```
+cd ...\Lr1\task2
+python server.py
+```
+Терминал 2:
+```
+cd ...\Lr1\task2
+python client.py
+```
 
-### Задание 1
+### Ожидаемый результат
+Клиент отправляет основание и высоту через запятую (например, "5,3"), сервер вычисляет площадь и возвращает результат. Для выхода введите 'exit'.
 
-Реализовать клиентскую и серверную часть приложения. Клиент отправляет серверу сообщение «Hello, server», и оно должно отобразиться на стороне сервера. В ответ сервер отправляет клиенту сообщение «Hello, client», которое должно отобразиться у клиента.
+### Важные нюансы
+TCP устанавливает соединение, данные передаются потоково. Необходимо обрабатывать исключения при разрыве соединения. Сервер использует многопоточность для обработки нескольких клиентов.
 
-**Требования:**
 
-- Обязательно использовать библиотеку `socket`
-- Реализовать с помощью протокола UDP
+## Задание 3 — Простой HTTP сервер
 
-**Полезные ссылки:**
+### Цель
+Создать HTTP сервер, обслуживающий статическую HTML-страницу.
 
-- [Habr: Основы работы с сокетами](https://habr.com/ru/post/149077/)
-- [Андрей Малинин: Сокеты в Python](https://andreymal.org/socket3/)
-- [Документация Python: Руководство по сокетам](https://docs.python.org/3.6/howto/sockets.html)
-- [Python Library Reference: socket](https://docs.python.org/3.6/library/socket.html)
-- [Видео: Введение в работу с сокетами](https://www.youtube.com/watch?v=Lbfe3-v7yE0)
+### Протокол и API
+- Использует стандартную библиотеку http.server
+- Ключевые классы: HTTPServer, BaseHTTPRequestHandler
 
-### Задание 2
+### Файлы
+- Lr1/task3/server.py
+- Lr1/task3/index.html
 
-Реализовать клиентскую и серверную часть приложения. Клиент запрашивает выполнение математической операции, параметры которой вводятся с клавиатуры. Сервер обрабатывает данные и возвращает результат клиенту.
+### Запуск
+```
+cd ...\Lr1\task3
+python server.py
+```
+Откройте браузер: http://localhost:8080
 
-**Варианты операций:**
+### Ожидаемый результат
+Сервер отображает HTML-страницу из файла index.html.
 
-1. Теорема Пифагора
-2. Решение квадратного уравнения
-3. Поиск площади трапеции
-4. Поиск площади параллелограмма
+### Важные нюансы
+Сервер работает в бесконечном цикле, обрабатывая запросы. Для остановки используйте Ctrl+C.
 
-Порядок выбора варианта: Выбирается по порядковому номеру в журнале (пятый студент получает вариант 1 и т.д.).
+## Задание 4 — Многопользовательский чат
 
-**Требования:**
+### Цель
+Реализовать TCP чат-сервер с поддержкой нескольких пользователей с использованием потоков.
 
-- Обязательно использовать библиотеку `socket`
-- Реализовать с помощью протокола TCP
+### Протокол и API
+- Адресное семейство: AF_INET (IPv4)
+- Тип сокета: SOCK_STREAM (TCP)
+- Ключевые вызовы: socket(), bind(), listen(), accept(), recv(), send()
+- Многопоточность: threading
 
-**Полезные ссылки:**
+### Файлы
+- Lr1/task4/server.py
+- Lr1/task4/client.py
 
-- [ZetCode: Работа с сокетами](http://zetcode.com/python/socket/)
+### Запуск
+Терминал 1:
+```
+cd ...\Lr1\task4
+python server.py
+```
+Терминалы 2+:
+```
+cd ...\Lr1\task4
+python client.py
+```
 
-### Задание 3
+### Ожидаемый результат
+Клиенты подключаются, вводят имя, обмениваются сообщениями в чате.
 
-Реализовать серверную часть приложения. Клиент подключается к серверу, и в ответ получает HTTP-сообщение, содержащее HTML-страницу, которая сервер подгружает из файла `index.html`.
+### Важные нюансы
+Сервер использует отдельный поток для каждого клиента. Необходимо синхронизировать доступ к общим ресурсам (списку клиентов).
 
-**Требования:**
+## Задание 5 — Веб-сервер для управления оценками
 
-- Обязательно использовать библиотеку `socket`
+### Цель
+Создать HTTP сервер для обработки GET и POST запросов, управления оценками по дисциплинам.
 
-**Полезные ссылки:**
+### Протокол и API
+- Использует http.server
+- Методы: GET /, POST /add
+- Данные хранятся в файле grades.txt
 
-- [ZetCode: Работа с сокетами](http://zetcode.com/python/socket/)
+### Файлы
+- Lr1/task5/server.py
+- Lr1/task5/Index.html
+- Lr1/task5/grades.txt
 
-### Задание 4
+### Запуск
+```
+cd ...\Lr1\task5
+python server.py
+```
+Откройте браузер: http://localhost:8085
 
-Реализовать двухпользовательский или многопользовательский чат. Для максимального количества баллов реализуйте многопользовательский чат.
+### Ожидаемый результат
+GET / отображает оценки в HTML. POST /add добавляет новую оценку.
 
-**Требования:**
+### Важные нюансы
+Сервер парсит параметры из POST-запроса. Данные сохраняются в файл для persistence.
 
-- Обязательно использовать библиотеку `socket`
-- Для многопользовательского чата необходимо использовать библиотеку `threading`
-
-**Реализация:**
-
-- Протокол TCP: 100% баллов
-- Протокол UDP: 80% баллов
-- Для UDP используйте `threading` для получения сообщений на клиенте
-- Для TCP запустите клиентские подключения и обработку сообщений от всех пользователей в потоках. Не забудьте сохранять пользователей, чтобы отправлять им сообщения
-
-**Полезные ссылки:**
-
-- [Документация Python: threading](https://docs.python.org/3/library/threading.html)
-- [WebDevBlog: Введение в потоки Python](https://webdevblog.ru/vvedenie-v-potoki-v-python/)
-
-### Задание 5
-
-Написать простой веб-сервер для обработки GET и POST HTTP-запросов с помощью библиотеки `socket` в Python.
-
-**Задание:**
-
-Сервер должен:
-
-1. Принять и записать информацию о дисциплине и оценке по дисциплине
-2. Отдать информацию обо всех оценках по дисциплинам в виде HTML-страницы
-
-**Полезные ссылки:**
-
-- [Базовый класс для веб-сервера](https://docs.google.com/document/d/1lv_3D9VtMxz8tNkA6rA1xu9zaWEIBGXiLWBo1cse-0k/edit?usp=sharing)
-- [Мануал по созданию сервера](https://iximiuz.com/ru/posts/writing-python-web-server-part-3/)
-
-## Выполнение работы
-
-- Работа выполняется индивидуально
-- По результатам необходимо подготовить отчет в виде текстового документа
-
-## Оценивание
-
-- Выполнение пунктов 1-4 и однопользовательского чата (без потоков) — 60% баллов
-- Выполнение пунктов 1-5 и многопользовательского чата (с потоками) — 100% баллов
