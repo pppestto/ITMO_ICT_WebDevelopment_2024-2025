@@ -6,7 +6,7 @@
   <div class="lab-card">
     <h3>🔌 Лабораторная работа 1</h3>
     <p>Работа с сетевыми сокетами в Python</p>
-    <a href="https://YOUR_USERNAME.github.io/lr1-sockets-report/" class="btn">Перейти →</a>
+    <a href="https://pppestto.github.io/lr1-sockets-report/" class="btn">Перейти →</a>
   </div>
 
   <div class="lab-card">
@@ -18,7 +18,7 @@
   <div class="lab-card">
     <h3>🎯 Лабораторная работа 3</h3>
     <p>Хакатон API</p>
-    <a href="https://YOUR_USERNAME.github.io/lr3-hackathon-report/" class="btn">Перейти →</a>
+    <a href="https://pppestto.github.io/lr3-hackathon-report/" class="btn">Перейти →</a>
   </div>
 </div>
 
