@@ -7,22 +7,30 @@
     <div class="lab-icon">🔌</div>
     <h3>Лабораторная работа 1</h3>
     <p>Работа с сетевыми сокетами в Python</p>
-    <div class="lab-status">✅ Завершена</div>
+    <div class="lab-status">Завершена</div>
   </div>
 
   <div class="lab-card" onclick="window.location.href='lr2.md'">
     <div class="lab-icon">🚀</div>
     <h3>Лабораторная работа 2</h3>
     <p>Django приложение для автогонок</p>
-    <div class="lab-status">✅ Завершена</div>
+    <div class="lab-status">Завершена</div>
   </div>
 
   <div class="lab-card" onclick="window.location.href='lr3.md'">
     <div class="lab-icon">🎯</div>
     <h3>Лабораторная работа 3</h3>
     <p>Хакатон API</p>
-    <div class="lab-status">🔄 В разработке</div>
+    <div class="lab-status">В разработке</div>
   </div>
+
+  <div class="lab-card" onclick="window.location.href='lr4.md'">
+    <div class="lab-icon">🔧</div>
+    <h3>Лабораторная работа 4</h3>
+    <p>Будущая лабораторная работа</p>
+    <div class="lab-status">Ожидает</div>
+  </div>
+
 </div>
 
 ## О проекте
