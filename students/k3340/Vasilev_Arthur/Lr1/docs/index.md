@@ -1,53 +1,113 @@
-# Лабораторная работа 1: Работа с сокетами в Python
+# Отчеты по лабораторным работам
 
-## Выбор лабораторной работы
+## Выберите лабораторную работу
 
-<div class="lab-cards">
-  <div class="lab-card">
-    <h3>🏎️ Лабораторная работа 1</h3>
+<div class="lab-selection">
+  <div class="lab-card" onclick="window.location.href='lr1.md'">
+    <div class="lab-icon">🔌</div>
+    <h3>Лабораторная работа 1</h3>
     <p>Работа с сетевыми сокетами в Python</p>
-    <p><strong>Текущая работа</strong></p>
+    <div class="lab-status">✅ Завершена</div>
   </div>
 
-  <div class="lab-card">
-    <h3>🚀 Лабораторная работа 2</h3>
+  <div class="lab-card" onclick="window.location.href='lr2.md'">
+    <div class="lab-icon">🚀</div>
+    <h3>Лабораторная работа 2</h3>
     <p>Django приложение для автогонок</p>
-    <a href="https://YOUR_USERNAME.github.io/lr2-django-report/" class="btn">Перейти →</a>
+    <div class="lab-status">✅ Завершена</div>
   </div>
 
-  <div class="lab-card">
-    <h3>🎯 Лабораторная работа 3</h3>
+  <div class="lab-card" onclick="window.location.href='lr3.md'">
+    <div class="lab-icon">🎯</div>
+    <h3>Лабораторная работа 3</h3>
     <p>Хакатон API</p>
-    <a href="https://YOUR_USERNAME.github.io/lr3-hackathon-report/" class="btn">Перейти →</a>
+    <div class="lab-status">🔄 В разработке</div>
   </div>
 </div>
 
+## О проекте
+
+Этот сайт содержит отчеты по лабораторным работам курса "Основы веб-разработки" в ITMO.
+
+- **Дисциплина:** Основы Web-программирования
+- **Студент:** Василев Артур
+- **Группа:** К3340
+- **Год:** 2024-2025
+
 <style>
-.lab-cards {
+.lab-selection {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin: 30px 0;
+  gap: 30px;
+  margin: 40px 0;
 }
 
 .lab-card {
   border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 20px;
+  border-radius: 15px;
+  padding: 30px 20px;
   text-align: center;
-  background: #fafafa;
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lab-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.lab-card:hover::before {
+  left: 100%;
 }
 
 .lab-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  border-color: #1976d2;
+}
+
+.lab-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
 }
 
 .lab-card h3 {
   color: #1976d2;
   margin-bottom: 10px;
+  font-size: 1.4rem;
 }
+
+.lab-card p {
+  color: #666;
+  margin: 15px 0;
+  line-height: 1.5;
+}
+
+.lab-status {
+  background: #4caf50;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .lab-selection {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 
 .lab-card p {
   margin: 10px 0;
