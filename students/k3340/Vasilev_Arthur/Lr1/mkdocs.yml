@@ -1,0 +1,54 @@
+site_name: Лабораторная работа 1 - Работа с сокетами
+site_description: Практические задания по работе с сетевыми сокетами в Python
+site_author: Vasilev Arthur
+
+theme:
+  name: material
+  language: ru
+  palette:
+    primary: blue
+    accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+
+nav:
+  - 🏠 Главная: index.md
+  - 📚 Лабораторные работы:
+    - Лабораторная работа 1 (Сокеты): index.md
+    - Лабораторная работа 2 (Django): https://pppestto.github.io/lr2-django-report/
+    - Лабораторная работа 3 (Хакатон): https://pppestto.github.io/lr3-hackathon-report/
+  - Задание 1: task1.md
+  - Задание 2: task2.md
+  - Задание 3: task3.md
+  - Задание 4: task4.md
+  - Задание 5: task5.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.tabbed
+  - attr_list
+  - md_in_html
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: '© 2024 Vasilev Arthur'
