@@ -1,143 +1,260 @@
-# Printing House API (Lr4)
+# Printing House API (Lr4 - Go Backend)
 
 ## Описание
 
-Printing House приложение управляет газетами, типографиями и их распределением (аналогично Lr3, теперь интегрировано с фронтенд-ом).
+Printing House приложение на Go управляет газетами, типографиями и их распределением. Это серверная часть Full Stack приложения с чистой архитектурой.
+
+## Архитектура
+
+Проект построен с использованием **Clean Architecture**:
+
+```
+printing_house_go/
+├── internal/
+│   ├── entities/       # Доменные модели
+│   ├── cases/          # Бизнес-логика (use cases)
+│   ├── adapters/       # Адаптеры (PostgreSQL)
+│   └── ports/          # Внешние интерфейсы (HTTP)
+├── pkg/
+│   └── dto/            # Data Transfer Objects
+└── deployment/
+    ├── config/         # Конфигурация
+    └── migrations/     # SQL миграции
+```
 
 ## Модели
 
 ### Newspaper
-```python
-class Newspaper(models.Model):
-    title = CharField()
-    publication_index = CharField(unique=True)
-    editor_first_name = CharField()
-    editor_last_name = CharField()
-    editor_middle_name = CharField()
-    price_per_copy = DecimalField()
+```go
+type Newspaper struct {
+    ID               int     `json:"id"`
+    Title            string  `json:"title"`
+    PublicationIndex string  `json:"publication_index"`
+    EditorFirstName  string  `json:"editor_first_name"`
+    EditorLastName   string  `json:"editor_last_name"`
+    EditorMiddleName *string `json:"editor_middle_name"`
+    PricePerCopy     float64 `json:"price_per_copy"`
+}
 ```
 
 ### PrintingHouse
-```python
-class PrintingHouse(models.Model):
-    name = CharField()
-    address = TextField()
-    is_active = BooleanField()
+```go
+type PrintingHouse struct {
+    ID       int    `json:"id"`
+    Name     string `json:"name"`
+    Address  string `json:"address"`
+    IsActive bool   `json:"is_active"`
+}
 ```
 
 ### PostOffice
-```python
-class PostOffice(models.Model):
-    number = CharField(unique=True)
-    address = TextField()
-```
-
-### PrintingRun
-```python
-class PrintingRun(models.Model):
-    printing_house = ForeignKey(PrintingHouse)
-    newspaper = ForeignKey(Newspaper)
-    circulation = IntegerField()
-    # Unique constraint: (printing_house, newspaper)
+```go
+type PostOffice struct {
+    ID      int    `json:"id"`
+    Number  string `json:"number"`
+    Address string `json:"address"`
+}
 ```
 
 ### Distribution
-```python
-class Distribution(models.Model):
-    post_office = ForeignKey(PostOffice)
-    newspaper = ForeignKey(Newspaper)
-    printing_house = ForeignKey(PrintingHouse)
-    quantity = IntegerField()
+```go
+type Distribution struct {
+    ID              int `json:"id"`
+    PostOfficeID    int `json:"post_office_id"`
+    NewspaperID     int `json:"newspaper_id"`
+    PrintingHouseID int `json:"printing_house_id"`
+    Quantity        int `json:"quantity"`
+}
 ```
 
-## API Endpoints (порт 8001)
+### User
+```go
+type User struct {
+    ID           int       `json:"id"`
+    Username     string    `json:"username"`
+    Email        string    `json:"email"`
+    PasswordHash string    `json:"-"`
+    CreatedAt    time.Time `json:"created_at"`
+}
+```
 
-### Газеты
+## API Endpoints (порт 8080)
 
-GET /api/newspapers/ - список
-POST /api/newspapers/ - создать
-GET /api/newspapers/<id>/ - получить
-PUT /api/newspapers/<id>/ - обновить
-DELETE /api/newspapers/<id>/ - удалить
+**Base URL:** `http://localhost:8080/api/v1`
 
-### Типографии
+**Аутентификация:** JWT Bearer Token
 
-GET /api/printing-houses/ - список
-POST /api/printing-houses/ - создать
-GET /api/printing-houses/<id>/ - получить
-PUT /api/printing-houses/<id>/ - обновить
+```
+Authorization: Bearer <your_jwt_token>
+```
 
-### Почтовые отделения
+### Authentication
 
-GET /api/post-offices/ - список
-POST /api/post-offices/ - создать
+**Регистрация:**
+```http
+POST /api/v1/auth/register
+Content-Type: application/json
 
-### Тиражи
+{
+  "username": "newuser",
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
 
-GET /api/printing-runs/ - список
-POST /api/printing-runs/ - создать
-GET /api/printing-runs/<id>/ - получить
+**Вход:**
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
 
-### Распределение
+{
+  "username": "newuser",
+  "password": "password123"
+}
+```
 
-GET /api/distribution/ - список
-POST /api/distribution/ - создать
-GET /api/distribution/<id>/ - получить
+**Ответ:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "username": "newuser",
+    "email": "user@example.com",
+    "created_at": "2026-02-17T00:00:00Z"
+  }
+}
+```
+
+**Текущий пользователь:**
+```http
+GET /api/v1/auth/me
+Authorization: Bearer <token>
+```
+
+### Newspapers
+
+```http
+GET /api/v1/newspapers          # список
+POST /api/v1/newspapers         # создать
+GET /api/v1/newspapers/{id}     # получить
+PUT /api/v1/newspapers/{id}     # обновить
+DELETE /api/v1/newspapers/{id}  # удалить
+```
+
+### Printing Houses
+
+```http
+GET /api/v1/printing-houses          # список
+POST /api/v1/printing-houses         # создать
+GET /api/v1/printing-houses/{id}     # получить
+PUT /api/v1/printing-houses/{id}     # обновить
+DELETE /api/v1/printing-houses/{id}  # удалить
+```
+
+### Post Offices
+
+```http
+GET /api/v1/post-offices          # список
+POST /api/v1/post-offices         # создать
+GET /api/v1/post-offices/{id}     # получить
+PUT /api/v1/post-offices/{id}     # обновить
+DELETE /api/v1/post-offices/{id}  # удалить
+```
+
+### Distributions
+
+```http
+GET /api/v1/distributions          # список
+POST /api/v1/distributions         # создать
+GET /api/v1/distributions/{id}     # получить
+PUT /api/v1/distributions/{id}     # обновить
+DELETE /api/v1/distributions/{id}  # удалить
+```
 
 ## Примеры запросов
 
 ### Создать газету
-```
-POST http://localhost:8001/api/newspapers/
-
-{
-  "title": "Pravda",
-  "publication_index": "2312-3652",
-  "editor_first_name": "Ivan",
-  "editor_last_name": "Petrov",
-  "price_per_copy": "15.50"
-}
+```bash
+curl -X POST http://localhost:8080/api/v1/newspapers \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Pravda",
+    "publication_index": "2312-3652",
+    "editor_first_name": "Ivan",
+    "editor_last_name": "Petrov",
+    "price_per_copy": 15.50
+  }'
 ```
 
 ### Создать типографию
-```
-POST http://localhost:8001/api/printing-houses/
-
-{
-  "name": "PrintCo",
-  "address": "Moscow, Tverskaya 10",
-  "is_active": true
-}
-```
-
-### Создать тираж
-```
-POST http://localhost:8001/api/printing-runs/
-
-{
-  "printing_house": 1,
-  "newspaper": 1,
-  "circulation": 50000
-}
+```bash
+curl -X POST http://localhost:8080/api/v1/printing-houses \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "PrintCo",
+    "address": "Moscow, Tverskaya 10",
+    "is_active": true
+  }'
 ```
 
 ### Создать распределение
-```
-POST http://localhost:8001/api/distribution/
-
-{
-  "post_office": 1,
-  "newspaper": 1,
-  "printing_house": 1,
-  "quantity": 5000
-}
+```bash
+curl -X POST http://localhost:8080/api/v1/distributions \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_office_id": 1,
+    "newspaper_id": 1,
+    "printing_house_id": 1,
+    "quantity": 5000
+  }'
 ```
 
 ## Workflow
 
-1. Создание газеты
-2. Создание типографии
-3. Определение тиража для печати
-4. Распределение газет по почтовым отделениям
+1. Зарегистрироваться или войти (получить JWT токен)
+2. Создать газету
+3. Создать типографию
+4. Создать почтовое отделение
+5. Создать распределение
+
+## Технологии
+
+- **Go** 1.23.0
+- **Chi Router** - маршрутизация
+- **PostgreSQL** - база данных
+- **pgx/v4** - драйвер БД
+- **JWT** (golang-jwt/jwt/v5) - аутентификация
+- **bcrypt** - хеширование паролей
+- **Viper** - конфигурация
+- **Docker Compose** - оркестрация
+
+## Запуск
+
+```bash
+cd printing_house_go
+docker-compose up -d
+```
+
+API доступен на `http://localhost:8080`
+
+## Тестовые пользователи
+
+| Username | Email | Password |
+|----------|-------|----------|
+| admin | admin@printinghouse.local | password123 |
+| testuser | test@printinghouse.local | password123 |
+
+## Особенности
+
+- **Clean Architecture** - разделение на слои
+- **Dependency Injection** - внедрение зависимостей
+- **Repository Pattern** - абстракция БД
+- **JWT токены** - срок действия 7 дней
+- **Миграции** - версионирование схемы БД
+- **CORS** - настроен для frontend на порту 5173
 
 Дополнительно: [Вернуться к обзору Lr4](index.md)

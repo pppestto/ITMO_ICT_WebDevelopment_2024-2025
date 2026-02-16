@@ -1,8 +1,8 @@
-# Printing House Frontend (Vue.js 3)
+# Printing House Frontend (Vue.js 3 + TypeScript)
 
 ## Описание
 
-Frontend приложение на Vue.js 3 с TypeScript для управления типографией. Взаимодействует с Django REST API.
+Frontend приложение на Vue.js 3 с TypeScript для управления типографией. Взаимодействует с Go REST API через JWT аутентификацию.
 
 ## Технологии
 
@@ -54,75 +54,181 @@ frontend/
 
 ### Файл: services/api.ts
 
+Настроен для работы с Go backend:
+
 ```typescript
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8001/api'
+  baseURL: 'http://localhost:8080/api/v1'
 });
 
+// JWT Bearer токен автоматически добавляется
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Authentication
+export const login = (username: string, password: string) => 
+  API.post('/auth/login', { username, password });
+
+export const register = (username: string, email: string, password: string) => 
+  API.post('/auth/register', { username, email, password });
+
+export const getCurrentUser = () => 
+  API.get('/auth/me');
+
 // Newspapers
-export const getNewspapers = (params?: any) => 
-  API.get('/newspapers/', { params });
+export const getNewspapers = () => 
+  API.get('/newspapers');
 
 export const createNewspaper = (data: any) => 
-  API.post('/newspapers/', data);
+  API.post('/newspapers', data);
 
 export const updateNewspaper = (id: number, data: any) => 
-  API.put(`/newspapers/${id}/`, data);
+  API.put(`/newspapers/${id}`, data);
 
 export const deleteNewspaper = (id: number) => 
-  API.delete(`/newspapers/${id}/`);
+  API.delete(`/newspapers/${id}`);
 
-// PrintingHouses
+// Printing Houses
 export const getPrintingHouses = () => 
-  API.get('/printing-houses/');
+  API.get('/printing-houses');
 
 export const createPrintingHouse = (data: any) => 
-  API.post('/printing-houses/', data);
+  API.post('/printing-houses', data);
 
-// PrintingRuns
-export const getPrintingRuns = () => 
-  API.get('/printing-runs/');
+export const updatePrintingHouse = (id: number, data: any) => 
+  API.put(`/printing-houses/${id}`, data);
 
-export const createPrintingRun = (data: any) => 
-  API.post('/printing-runs/', data);
+export const deletePrintingHouse = (id: number) => 
+  API.delete(`/printing-houses/${id}`);
 
-// Distribution
-export const getDistribution = () => 
-  API.get('/distribution/');
+// Post Offices
+export const getPostOffices = () => 
+  API.get('/post-offices');
+
+export const createPostOffice = (data: any) => 
+  API.post('/post-offices', data);
+
+export const updatePostOffice = (id: number, data: any) => 
+  API.put(`/post-offices/${id}`, data);
+
+export const deletePostOffice = (id: number) => 
+  API.delete(`/post-offices/${id}`);
+
+// Distributions
+export const getDistributions = () => 
+  API.get('/distributions');
 
 export const createDistribution = (data: any) => 
-  API.post('/distribution/', data);
+  API.post('/distributions', data);
+
+export const updateDistribution = (id: number, data: any) => 
+  API.put(`/distributions/${id}`, data);
+
+export const deleteDistribution = (id: number) => 
+  API.delete(`/distributions/${id}`);
 ```
 
 ## State Management (Pinia)
 
-### Store структура
+### Auth Store
+
+```typescript
+// stores/auth.ts
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import * as api from '@/services/api';
+
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref(null);
+  const token = ref(localStorage.getItem('auth_token'));
+  
+  const login = async (username: string, password: string) => {
+    const response = await api.login(username, password);
+    token.value = response.data.token;
+    user.value = response.data.user;
+    localStorage.setItem('auth_token', response.data.token);
+  };
+  
+  const logout = () => {
+    token.value = null;
+    user.value = null;
+    localStorage.removeItem('auth_token');
+  };
+  
+  const fetchCurrentUser = async () => {
+    if (token.value) {
+      const response = await api.getCurrentUser();
+      user.value = response.data;
+    }
+  };
+  
+  return {
+    user,
+    token,
+    login,
+    logout,
+    fetchCurrentUser,
+    isAuthenticated: computed(() => !!token.value)
+  };
+});
+```
+
+### Printing Store
 
 ```typescript
 // stores/printing.ts
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import * as api from '@/services/api';
 
 export const usePrintingStore = defineStore('printing', () => {
   const newspapers = ref([]);
   const printingHouses = ref([]);
+  const postOffices = ref([]);
+  const distributions = ref([]);
   
   const fetchNewspapers = async () => {
-    const res = await getNewspapers();
-    newspapers.value = res.data.results;
+    const res = await api.getNewspapers();
+    newspapers.value = res.data;
   };
   
   const addNewspaper = async (data) => {
-    await createNewspaper(data);
+    await api.createNewspaper(data);
     await fetchNewspapers();
+  };
+  
+  const fetchPrintingHouses = async () => {
+    const res = await api.getPrintingHouses();
+    printingHouses.value = res.data;
+  };
+  
+  const fetchPostOffices = async () => {
+    const res = await api.getPostOffices();
+    postOffices.value = res.data;
+  };
+  
+  const fetchDistributions = async () => {
+    const res = await api.getDistributions();
+    distributions.value = res.data;
   };
   
   return {
     newspapers,
     printingHouses,
+    postOffices,
+    distributions,
     fetchNewspapers,
-    addNewspaper
+    addNewspaper,
+    fetchPrintingHouses,
+    fetchPostOffices,
+    fetchDistributions
   };
 });
 ```
@@ -156,28 +262,76 @@ onMounted(() => {
 
 ```typescript
 // router/index.ts
+import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+
 const routes = [
   {
     path: '/',
-    component: Dashboard
+    component: HomeView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/login',
+    component: LoginView,
+    meta: { guest: true }
+  },
+  {
+    path: '/register',
+    component: RegisterView,
+    meta: { guest: true }
+  },
+  {
+    path: '/profile',
+    component: ProfileView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/newspapers',
-    component: NewspapersPage
+    component: NewspapersView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/printing-houses',
-    component: PrintingHousesPage
+    component: PrintingHousesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/post-offices',
+    component: PostOfficesView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/printing-runs',
-    component: PrintingRunsPage
+    component: PrintingRunsView,
+    meta: { requiresAuth: true }
   },
   {
-    path: '/distribution',
-    component: DistributionPage
+    path: '/distributions',
+    component: DistributionsView,
+    meta: { requiresAuth: true }
   }
 ];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+});
+
+// Защита маршрутов
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login');
+  } else if (to.meta.guest && authStore.isAuthenticated) {
+    next('/');
+  } else {
+    next();
+  }
+});
+
+export default router;
 ```
 
 ## UI с Vuetify 3
@@ -194,12 +348,24 @@ const routes = [
 ## Запуск
 
 ```bash
-cd frontend
+cd frontend_go
 npm install
 npm run dev
 ```
 
 Доступно: http://localhost:5173
+
+**Быстрый запуск всего стека:**
+
+Linux/Mac:
+```bash
+./start-fullstack.sh
+```
+
+Windows:
+```cmd
+start-fullstack.bat
+```
 
 ## Сборка для продакшена
 
@@ -209,10 +375,27 @@ npm run build
 
 Будет создана папка `dist/` с собранным приложением.
 
+## Конфигурация Backend URL
+
+Отредактируйте `src/services/api.ts` для изменения адреса backend:
+
+```typescript
+const API = axios.create({
+  baseURL: 'http://localhost:8080/api/v1'  // Go backend
+});
+```
+
 ## TypeScript типы
 
 ```typescript
 // types/index.ts
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  created_at: string;
+}
+
 export interface Newspaper {
   id: number;
   title: string;
@@ -220,7 +403,7 @@ export interface Newspaper {
   editor_first_name: string;
   editor_last_name: string;
   editor_middle_name?: string;
-  price_per_copy: string;
+  price_per_copy: number;
 }
 
 export interface PrintingHouse {
@@ -230,19 +413,34 @@ export interface PrintingHouse {
   is_active: boolean;
 }
 
-export interface PrintingRun {
+export interface PostOffice {
   id: number;
-  printing_house: number;
-  newspaper: number;
-  circulation: number;
+  number: string;
+  address: string;
 }
 
 export interface Distribution {
   id: number;
-  post_office: number;
-  newspaper: number;
-  printing_house: number;
+  post_office_id: number;
+  newspaper_id: number;
+  printing_house_id: number;
   quantity: number;
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
 }
 ```
 
@@ -264,5 +462,34 @@ try {
 - Мобильные устройства
 - Планшеты
 - Десктопы
+
+## Отличия от Python версии
+
+| Аспект | Python Backend | Go Backend |
+|--------|----------------|------------|
+| API Base URL | `http://localhost:8000` | `http://localhost:8080/api/v1` |
+| Auth Header | `Token <token>` | `Bearer <token>` |
+| Login Response | `{ auth_token, user_id }` | `{ token, user }` |
+| Endpoints | Trailing slash `/` | Без slash |
+| Auth Type | Django Token | JWT Token |
+
+## Тестовые пользователи
+
+| Username | Email | Password |
+|----------|-------|----------|
+| admin | admin@printinghouse.local | password123 |
+| testuser | test@printinghouse.local | password123 |
+
+## Основные страницы
+
+- **LoginView** - аутентификация пользователя
+- **RegisterView** - регистрация нового пользователя
+- **HomeView** - главная страница с dashboard
+- **ProfileView** - профиль пользователя
+- **NewspapersView** - управление газетами (CRUD)
+- **PrintingHousesView** - управление типографиями (CRUD)
+- **PostOfficesView** - управление почтовыми отделениями (CRUD)
+- **PrintingRunsView** - управление тиражами
+- **DistributionsView** - управление распределениями (CRUD)
 
 Дополнительно: [Вернуться к обзору Lr4](index.md)

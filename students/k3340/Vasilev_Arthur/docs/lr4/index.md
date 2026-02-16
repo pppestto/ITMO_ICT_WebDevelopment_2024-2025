@@ -1,164 +1,264 @@
-# Lr4 - Full Stack приложение
+# Lr4 - Full Stack приложение (Go + Vue.js)
 
 ## Описание
 
-Четвёртая лабораторная работа это полнофункциональное Full Stack приложение с разделением на фронтенд (Vue.js 3) и бэкэнд (Django REST API).
+Четвёртая лабораторная работа - это полнофункциональное Full Stack приложение с разделением на фронтенд (Vue.js 3 + TypeScript) и бэкэнд (Go REST API).
 
 ## Цели работы
 
 - Разработать полнофункциональное веб-приложение
-- Интегрировать Django REST API с Vue.js фронтенд-ом
-- Работать с современными инструментами разработки
+- Интегрировать Go REST API с Vue.js фронтенд-ом
+- Работать с современным стеком технологий
 - Понять архитектуру Full Stack приложения
-- Организовать взаимодействие фронтенда и бэкэнда
+- Организовать взаимодействие фронтенда и бэкэнда через REST API
 
 ## Архитектура
 
 ```
-Frontend (Vue.js 3)       Backend (Django)
-   Vuetify 3               Warriors API (8000)
-   TypeScript              Printing House (8001)
-   Port 5173 (Vite)
+Frontend (Vue.js 3)          Backend (Go)
+   Vuetify 3              Printing House API
+   TypeScript             Chi Router + PostgreSQL
+   Port 5173 (Vite)       Port 8080
+                          JWT Authentication
 ```
 
 ## Структура проекта
 
 ```
 Lr4/
-├── car_owners_project/    # Django REST API
-│   ├── warriors_app/      # Warriors приложение
-│   └── manage.py
+├── printing_house_go/         # Go Backend
+│   ├── cmd/                   # Точки входа
+│   ├── internal/              # Внутренняя логика
+│   │   ├── app/               # Инициализация
+│   │   ├── adapters/          # БД адаптеры
+│   │   ├── cases/             # Бизнес-логика
+│   │   ├── entities/          # Доменные модели
+│   │   └── ports/             # HTTP обработчики
+│   ├── pkg/                   # Публичные пакеты
+│   ├── deployment/            # Конфигурация и миграции
+│   ├── docker-compose.yml     # Docker оркестрация
+│   └── go.mod                 # Go зависимости
 │
-├── printing_house/        # Django REST API
-│   ├── core/              # Printing House приложение
-│   └── manage.py
-│
-├── frontend/              # Vue.js 3 приложение
+├── frontend_go/               # Vue.js 3 Frontend
 │   ├── src/
-│   │   ├── components/    # Vue компоненты
-│   │   ├── views/         # Страницы
-│   │   ├── services/      # API сервисы
-│   │   ├── stores/        # Pinia хранилище
-│   │   └── App.vue
+│   │   ├── components/        # Vue компоненты
+│   │   ├── views/             # Страницы
+│   │   ├── services/          # API сервисы
+│   │   ├── stores/            # Pinia stores
+│   │   ├── router/            # Vue Router
+│   │   └── types/             # TypeScript типы
 │   ├── package.json
 │   └── vite.config.ts
 │
-├── start_backend.ps1      # Скрипт запуска бэкэнда
-└── start_frontend.ps1     # Скрипт запуска фронтэнда
+├── docs/                      # Документация
+├── mkdocs.yml                 # Конфигурация документации
+└── Postman_Collection.json    # API тесты
 ```
 
-## Фронтенд технологии
+## Технологии Backend
 
-- Vue.js 3 (Composition API)
-- TypeScript
-- Vite (сборщик)
-- Vuetify 3 (UI компоненты)
-- Pinia (state management)
-- axios (HTTP клиент)
-- Vue Router (маршрутизация)
+- **Go** 1.23.0
+- **Chi Router** - HTTP маршрутизация
+- **PostgreSQL** - база данных
+- **pgx/v4** - драйвер PostgreSQL
+- **JWT** - аутентификация
+- **Docker & Docker Compose** - контейнеризация
+- **Viper** - управление конфигурацией
+
+## Технологии Frontend
+
+- **Vue.js 3** (Composition API)
+- **TypeScript** - типизация
+- **Vite** - сборщик
+- **Vuetify 3** - UI библиотека
+- **Pinia** - state management
+- **axios** - HTTP клиент
+- **Vue Router** - маршрутизация
 
 ## Структура фронтенда
 
 ```
-src/
-├── App.vue
-├── main.ts
-├── components/      # Переиспользуемые компоненты
-├── views/          # Страницы приложения
-├── services/       # API сервисы для запросов
-├── stores/         # Pinia хранилища состояния
-├── types/          # TypeScript типы
-├── router/         # Vue Router конфиг
-└── plugins/        # Плагины Vuetify
+frontend_go/src/
+├── App.vue              # Главный компонент
+├── main.ts              # Точка входа
+├── views/               # Страницы
+│   ├── HomeView.vue
+│   ├── LoginView.vue
+│   ├── RegisterView.vue
+│   ├── ProfileView.vue
+│   ├── NewspapersView.vue
+│   ├── PrintingHousesView.vue
+│   ├── PostOfficesView.vue
+│   ├── PrintingRunsView.vue
+│   └── DistributionsView.vue
+├── services/
+│   └── api.ts           # API клиент (настроен для Go backend)
+├── stores/
+│   └── auth.ts          # JWT аутентификация
+├── router/
+│   └── index.ts         # Маршруты с защитой
+└── types/
+    └── index.ts         # TypeScript интерфейсы
 ```
 
-## Бэкэнд приложения
+## Основные возможности
 
-### Warriors API
+### Backend (Go API)
 
-REST API для управления воинами (профессиями и навыками).
+- JWT аутентификация с токенами на 7 дней
+- CRUD операции для газет, типографий, отделений
+- Управление распределением печатных изданий
+- Чистая архитектура с разделением слоев
+- PostgreSQL с миграциями
+- Docker контейнеризация
 
-[Подробное описание Warriors App](warrior_app.md)
+[Подробное описание Backend API](printing_house.md)
 
-### Printing House API
+### Frontend (Vue.js)
 
-REST API для управления газетами, типографиями и их распределением.
-
-[Подробное описание Printing House](printing_house.md)
-
-### Frontend Integration
+- Аутентификация пользователей
+- Управление профилем
+- CRUD интерфейсы для всех сущностей
+- Адаптивный дизайн (Vuetify)
+- Защищенные маршруты
+- Централизованное управление состоянием (Pinia)
 
 [Подробное описание Frontend](printing_house_frontend.md)
 
 ## Запуск приложения
 
-### Запуск бэкэнда
+### Запуск Backend (Go)
 
 ```bash
-# Warriors API (порт 8000)
-cd car_owners_project
-python manage.py migrate
-python manage.py runserver
-
-# Printing House (порт 8001, в отдельном терминале)
-cd printing_house
-python manage.py migrate
-python manage.py runserver 8001
+cd printing_house_go
+docker-compose up -d
 ```
 
-### Запуск фронтенда
+Backend будет доступен на `http://localhost:8080`
+
+### Запуск Frontend (Vue.js)
 
 ```bash
-cd frontend
+cd frontend_go
 npm install
 npm run dev
 ```
 
-Фронтенд: http://localhost:5173
+Frontend будет доступен на `http://localhost:5173`
 
-### Через PowerShell скрипты
+### Быстрый запуск всего стека
 
-```powershell
-.\start_backend.ps1
-.\start_frontend.ps1
+**Linux/Mac:**
+```bash
+cd frontend_go
+./start-fullstack.sh
 ```
 
-## CORS настройка
-
-Фронтенд и бэкэнд должны быть настроены для работы вместе:
-
-```python
-# settings.py
-INSTALLED_APPS = [
-    'corsheaders',
-    'rest_framework',
-]
-
-MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-]
-
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-]
+**Windows:**
+```cmd
+cd frontend_go
+start-fullstack.bat
 ```
+
+## Конфигурация
+
+### Backend конфигурация
+
+`printing_house_go/deployment/config/config.yml`:
+
+```yaml
+server:
+  port: 8080
+  host: 0.0.0.0
+
+database:
+  host: postgres
+  port: 5432
+  user: postgres
+  password: postgres
+  dbname: printing_house
+
+jwt:
+  secret: your-secret-key-change-in-production
+  expiration_days: 7
+```
+
+### CORS настройка
+
+Backend автоматически разрешает запросы с `http://localhost:5173` (настроено в коде).
 
 ## API Endpoints
 
-### Warriors API (8000)
-- GET/POST /api/warriors/
-- GET/PUT/DELETE /api/warriors/<id>/
-- GET/POST /api/professions/
-- GET/POST /api/skills/
+**Base URL:** `http://localhost:8080/api/v1`
 
-### Printing House API (8001)
-- GET/POST /api/newspapers/
-- GET/POST /api/printing-houses/
-- GET/POST /api/printing-runs/
-- GET/POST /api/distribution/
+### Authentication
+- `POST /api/v1/auth/register` - Регистрация
+- `POST /api/v1/auth/login` - Вход
+- `GET /api/v1/auth/me` - Текущий пользователь
+
+### Newspapers
+- `GET /api/v1/newspapers` - Список газет
+- `POST /api/v1/newspapers` - Создать газету
+- `GET /api/v1/newspapers/{id}` - Получить газету
+- `PUT /api/v1/newspapers/{id}` - Обновить газету
+- `DELETE /api/v1/newspapers/{id}` - Удалить газету
+
+### Printing Houses
+- `GET /api/v1/printing-houses` - Список типографий
+- `POST /api/v1/printing-houses` - Создать типографию
+- `GET /api/v1/printing-houses/{id}` - Получить типографию
+- `PUT /api/v1/printing-houses/{id}` - Обновить типографию
+- `DELETE /api/v1/printing-houses/{id}` - Удалить типографию
+
+### Post Offices
+- `GET /api/v1/post-offices` - Список отделений
+- `POST /api/v1/post-offices` - Создать отделение
+- `GET /api/v1/post-offices/{id}` - Получить отделение
+- `PUT /api/v1/post-offices/{id}` - Обновить отделение
+- `DELETE /api/v1/post-offices/{id}` - Удалить отделение
+
+### Distributions
+- `GET /api/v1/distributions` - Список распределений
+- `POST /api/v1/distributions` - Создать распределение
+- `GET /api/v1/distributions/{id}` - Получить распределение
+- `PUT /api/v1/distributions/{id}` - Обновить распределение
+- `DELETE /api/v1/distributions/{id}` - Удалить распределение
+
+## Тестовые пользователи
+
+После запуска backend автоматически создаются:
+
+| Username | Email | Password |
+|----------|-------|----------|
+| admin | admin@printinghouse.local | password123 |
+| testuser | test@printinghouse.local | password123 |
 
 ## Тестирование
 
-Используйте Postman Collection из Postman_Collection.json для тестирования API.
+Используйте Postman Collection (`Postman_Collection.json`) для тестирования API.
+
+Или используйте веб-интерфейс на `http://localhost:5173`.
+
+## Особенности реализации
+
+### Отличия от Python версии
+
+| Аспект | Python (Lr3) | Go (Lr4) |
+|--------|--------------|----------|
+| Порт | 8000/8001 | 8080 |
+| API Base | `/api/` | `/api/v1/` |
+| Auth Header | `Token <token>` | `Bearer <token>` |
+| Auth Type | Django Token | JWT Token |
+| БД | SQLite | PostgreSQL |
+| Архитектура | MTV | Clean Architecture |
+
+### Ключевые технические решения
+
+- **Clean Architecture** - разделение на слои для тестируемости
+- **Dependency Injection** - инверсия зависимостей
+- **Repository Pattern** - абстракция работы с БД
+- **JWT** - stateless аутентификация
+- **Docker Compose** - одноконтейнерное развертывание
+- **Миграции** - версионирование схемы БД
 
 Статус: Завершено
