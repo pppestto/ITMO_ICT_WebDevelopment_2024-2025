@@ -31,8 +31,8 @@ theme:
     - content.code.annotate
 
 nav:
-  - 🏠 Главная: index.md
-  - 📌 Лабораторные работы:
+  - Главная: index.md
+  - Лабораторные работы:
     - Lr1 - Сокеты:
       - Обзор: lr1/index.md
       - Задания: lr1/tasks.md
@@ -41,11 +41,9 @@ nav:
       - Проект: lr2/project.md
     - Lr3 - API (REST):
       - Обзор: lr3/index.md
-      - Warriors App: lr3/warrior_app.md
       - Printing House: lr3/printing_house.md
     - Lr4 - Full Stack:
       - Обзор: lr4/index.md
-      - Warriors App: lr4/warrior_app.md
       - Printing House (Backend): lr4/printing_house.md
       - Printing House (Frontend): lr4/printing_house_frontend.md
 
