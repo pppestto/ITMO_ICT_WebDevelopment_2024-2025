@@ -33,9 +33,11 @@ theme:
 nav:
   - 🏠 Главная: index.md
   - 📌 Лабораторные работы:
-    - Lr1 - Сокеты: lr1/index.md
+    - Lr1 - Сокеты:
+      - Обзор: lr1/index.md
       - Задания: lr1/tasks.md
-    - Lr2 - Django (Гонки): lr2/index.md
+    - Lr2 - Django (Гонки):
+      - Обзор: lr2/index.md
       - Проект: lr2/project.md
     - Lr3 - API (REST):
       - Обзор: lr3/index.md
